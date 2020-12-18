@@ -133,7 +133,7 @@
 
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.notifier.hdfs-notifier</mainClass>
+									<mainClass>com.notifier.HdfsNotifier</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

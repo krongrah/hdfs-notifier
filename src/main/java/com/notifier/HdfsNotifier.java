@@ -3,8 +3,8 @@ package com.notifier;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hdfs.DFSInotifyEventInputStream;
@@ -24,14 +24,13 @@ public class HdfsNotifier {
 
 		//each change to the files in hdfs is given an id, called tx id
 		long lastReadTxid = 0;
-		ServerSocket servsock= null;
-		try {
-			servsock = new ServerSocket(80);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		//a tx id can be parsed as the second argument when starting the application,
+
+		SocketReciever sock= new SocketReciever();
+		sock.setDaemon(true);
+
+		//a tx id can be parsed as
+		// the second argument when starting the application,
 		// to continue where it left off, rather than start over in each restart.
 		if (args.length > 1) {
 			lastReadTxid = Long.parseLong(args[1]);
@@ -55,15 +54,9 @@ public class HdfsNotifier {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		boolean connected=false;
-		while (true){
-			try {
-				Socket connection=servsock.accept();
-				connected=true;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			while (connected) {
+
+		System.out.println("notifier ready");
+			while (true) {
 				//send or save the txid somewhere, in case of a crash
 
 				//each time this point is reached, the event batch collects all changes made
@@ -77,7 +70,6 @@ public class HdfsNotifier {
 				System.out.println("TxId = " + batch.getTxid());
 
 				//the events are sorted by type, processed, whatever that means... todo
-				try{
 				for (Event event : batch.getEvents()) {
 					System.out.println("event type = " + event.getEventType());
 					switch (event.getEventType()) {
@@ -86,6 +78,7 @@ public class HdfsNotifier {
 							System.out.println("  path = " + createEvent.getPath());
 							System.out.println("  owner = " + createEvent.getOwnerName());
 							System.out.println("  ctime = " + createEvent.getCtime());
+							sock.notifyAllUsers();
 							break;
 						case UNLINK:
 							UnlinkEvent unlinkEvent = (UnlinkEvent) event;
@@ -107,14 +100,10 @@ public class HdfsNotifier {
 							break;
 					}
 				}
-				}catch(Exception e){//this is supposed to trigger if the js server disconnects
-					//but I don't know how to do that.
-					connected=false;
-				}
 			}
 		}
 
 
 	}
-}
+
 

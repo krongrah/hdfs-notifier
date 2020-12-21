@@ -28,6 +28,7 @@ public class HdfsNotifier {
 
 		SocketReciever sock= new SocketReciever();
 		sock.setDaemon(true);
+		sock.start();
 
 		//a tx id can be parsed as
 		// the second argument when starting the application,

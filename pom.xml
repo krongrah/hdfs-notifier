@@ -64,8 +64,6 @@
 		</pluginManagement>
 
 		<plugins>
-<!--			This plugin, i think, allows us to compile, and as been added manually.
-				I don't know what the rest do-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -83,8 +81,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 			<plugin>
